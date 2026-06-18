@@ -37,6 +37,7 @@ export interface RunningOptimizerServer {
 
 let optimizeModelPromise: Promise<typeof import('./optimizer.js')> | null = null
 let optimizeBatchPromise: Promise<typeof import('./batch.js')> | null = null
+const DOWNLOAD_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000
 
 export async function startOptimizerServer({
   distDir,
@@ -54,6 +55,12 @@ export async function startOptimizerServer({
     fs.mkdir(downloadsDir, { recursive: true }),
   ])
   await cleanupExpiredDownloads(downloadsDir)
+  const downloadCleanupTimer = setInterval(() => {
+    void cleanupExpiredDownloads(downloadsDir).catch((error) => {
+      console.error('Failed to cleanup expired web downloads:', error)
+    })
+  }, DOWNLOAD_CLEANUP_INTERVAL_MS)
+  downloadCleanupTimer.unref?.()
 
   const upload = multer({
     storage: multer.diskStorage({
@@ -443,6 +450,7 @@ export async function startOptimizerServer({
     origin,
     port: address.port,
     stop() {
+      clearInterval(downloadCleanupTimer)
       return new Promise<void>((resolve, reject) => {
         server.close((error) => {
           if (error) {

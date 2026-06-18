@@ -1,57 +1,37 @@
 # GLB 压缩优化器
 
-支持 `GLB` 的单文件压缩、批量压缩、桌面版运行，以及网页部署版运行。
+一个面向 `GLB` 模型的压缩工具，提供两种运行形态：
 
-当前核心模式是 **极致压缩**：
+- **桌面版**
+  适合本机直接选择输出目录、批量处理、交付文件。
+- **网页版**
+  适合部署到 Windows / Ubuntu 服务器，通过浏览器上传、压缩并下载结果。
 
-- 目标是尽量减小体积
+当前核心策略是 **极致压缩**：
+
 - 允许有损压缩
+- 目标是尽量减小体积
 - 尽量保留肉眼观感
 
-这个仓库现在同时包含两套运行形态：
+## 项目亮点
 
-- 桌面版：`Electron`
-- 网页版：`Express + Vite`
+- 支持 **单文件** 和 **批量压缩**
+- 支持 **网页部署版** 和 **桌面版**
+- 支持 **输出命名规则**
+- 批量压缩支持 **真实完成进度**
+- 网页版支持 **一条命令部署**
+- 网页版下载缓存支持 **自动清理**
 
-如果你是要部署到服务器，重点看下面的 **网页版一键部署**。
+## 快速开始
 
-## 仓库结构
-
-- `src/DesktopApp.tsx`
-  桌面版前端
-- `src/WebApp.tsx`
-  网页版前端
-- `src/App.tsx`
-  运行时分支入口
-- `server/optimizer.ts`
-  单文件压缩核心
-- `server/batch.ts`
-  批量压缩核心
-- `server/app.ts`
-  Web / Desktop 共用服务入口
-- `scripts/deploy-web.mjs`
-  网页版一键部署脚本
-
-## 环境要求
-
-- Node.js `20+`
-- npm `10+`
-- Git
-
-最低建议：
-
-- Node.js `18+`
-
-## 从 GitHub 拉取
+### 从 GitHub 拉取
 
 ```bash
 git clone https://github.com/chardlink/glb-optimizer.git
 cd glb-optimizer
 ```
 
-## 网页版一键部署
-
-这个仓库已经内置了一条一键部署命令：
+### 一条命令启动网页版
 
 ```bash
 npm run deploy:web
@@ -69,37 +49,29 @@ npm run deploy:web
 http://127.0.0.1:4307
 ```
 
-关闭当前终端，网页服务也会一起停止。
+关闭当前终端，网页服务会一起停止。
 
----
+## 一键部署
 
-## Windows 一键部署
-
-### CMD
-
-从 GitHub 拉取并一键启动：
+### Windows CMD
 
 ```cmd
 git clone https://github.com/chardlink/glb-optimizer.git && cd glb-optimizer && npm run deploy:web
 ```
 
-### PowerShell
-
-从 GitHub 拉取并一键启动：
+### Windows PowerShell
 
 ```powershell
 git clone https://github.com/chardlink/glb-optimizer.git; Set-Location glb-optimizer; npm run deploy:web
 ```
 
-## Ubuntu 一键部署
+### Ubuntu
 
 ```bash
 git clone https://github.com/chardlink/glb-optimizer.git && cd glb-optimizer && npm run deploy:web
 ```
 
-## 自定义监听地址和端口
-
-如果你想改端口或监听地址，也可以保持“一条命令”。
+## 自定义端口和监听地址
 
 ### Windows PowerShell
 
@@ -119,22 +91,22 @@ set HOST=0.0.0.0 && set PORT=8080 && npm run deploy:web
 HOST=0.0.0.0 PORT=8080 npm run deploy:web
 ```
 
-## 网页版和桌面版的区别
+## 两种版本的区别
 
 ### 桌面版
 
 - 可以选择本地输出目录
-- 处理完成后直接保存到指定目录
+- 压缩完成后直接保存到指定目录
 - 可以打开输出位置
 
 ### 网页版
 
 - 不预选本地输出目录
-- 单文件处理完成后提供 `.glb` 下载
-- 批量处理完成后提供 `.zip` 下载
-- 更适合部署到 Windows 或 Ubuntu 服务器
+- 单文件完成后提供 `.glb` 下载
+- 批量完成后提供 `.zip` 下载
+- 更适合部署到服务器或局域网环境
 
-## 网页版上传和输出规则
+## 网页版上传与输出逻辑
 
 ### 单文件
 
@@ -157,15 +129,13 @@ HOST=0.0.0.0 PORT=8080 npm run deploy:web
 
 ### 原文件名
 
-例如：
-
 ```text
 robot.glb
 ```
 
-### 原名+后缀
+### 原名 + 后缀
 
-如果后缀填 `mini`，例如：
+后缀填写 `mini` 时，例如：
 
 ```text
 robot_mini.glb
@@ -187,7 +157,7 @@ my-model-002.glb
 my-model-003.glb
 ```
 
-## 运行时目录与清理
+## 运行目录与自动清理
 
 网页版运行时会在项目根目录创建：
 
@@ -206,19 +176,35 @@ storage/
 
 当前清理策略：
 
-- `jobs` 会在处理结束后立即清掉
-- `downloads` 会在服务启动时清理过期内容
-- 下载缓存当前默认保留 `24 小时`
+- `jobs` 在处理结束后立即删除
+- `downloads` 在服务启动时会先清理一次过期文件
+- 服务运行期间会 **每 24 小时自动再清理一次**
+- 下载缓存默认保留 **24 小时**
 
-所以：
+因此：
 
-- 正常持续运行时，主要增长的是 `downloads`
-- 中间工作目录一般不会长期堆积
+- 正常运行时，`jobs` 不会长期堆积
+- 真正会持续增长的主要是 `downloads`
+- 长时间在线部署时，缓存也会被周期性自动清理
+
+## 本地开发
+
+### 网页开发
+
+```bash
+npm run dev
+```
+
+### 桌面版开发
+
+```bash
+npm run start:desktop
+```
 
 ## 常用命令
 
 - `npm run dev`
-  开发模式，前端和服务一起跑
+  前端和服务一起跑的开发模式
 - `npm run build`
   构建前端和服务端
 - `npm run serve:web`
@@ -232,23 +218,37 @@ storage/
 - `npm run dist:win`
   打 Windows 便携版
 
-## 桌面版补充
+## 项目结构
 
-如果你需要继续运行桌面版：
+- `src/DesktopApp.tsx`
+  桌面版前端
+- `src/WebApp.tsx`
+  网页版前端
+- `src/App.tsx`
+  运行时分支入口
+- `server/optimizer.ts`
+  单文件压缩核心
+- `server/batch.ts`
+  批量压缩核心
+- `server/app.ts`
+  Web / Desktop 共用服务入口
+- `scripts/deploy-web.mjs`
+  网页版一键部署脚本
 
-```bash
-npm run start:desktop
-```
+## 环境要求
 
-如果你需要重新打 Windows 成品：
+建议：
 
-```bash
-npm run dist:win
-```
+- Node.js `20+`
+- npm `10+`
+
+最低建议：
+
+- Node.js `18+`
 
 ## 注意事项
 
-- 当前模式是视觉压缩，不是严格无损。
+- 当前模式是**视觉压缩**，不是严格无损。
 - 如果目标环境不支持 `Draco`、`WebP` 等扩展，压缩结果可能无法正常加载。
-- 网页版处理发生在当前服务器，敏感文件不要上传到不可信环境。
-- 批量压缩时，服务器磁盘需要预留足够空间给中间文件和下载包。
+- 网页版处理发生在当前服务器，不建议上传到不可信环境处理敏感文件。
+- 批量压缩时，服务器磁盘需要预留足够空间存放中间文件和下载包。

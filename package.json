@@ -2,7 +2,7 @@
   "name": "glb-lossless-optimizer",
   "private": true,
   "version": "0.0.0",
-  "description": "Windows desktop app for GLB visual-first compression and batch optimization.",
+  "description": "GLB optimizer with desktop workflow and one-command web deployment.",
   "type": "module",
   "main": "build/electron/main.js",
   "scripts": {
