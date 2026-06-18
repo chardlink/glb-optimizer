@@ -1,0 +1,81 @@
+{
+  "name": "glb-lossless-optimizer",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Windows desktop app for GLB visual-first compression and batch optimization.",
+  "type": "module",
+  "main": "build/electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k --names server,client --prefix-colors yellow,cyan \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "tsx watch server/index.ts",
+    "build": "tsc -b && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.runtime.json && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "start": "tsx server/index.ts",
+    "serve:web": "node build/server/index.js",
+    "start:web": "npm run build && npm run serve:web",
+    "start:desktop": "npm run build && electron .",
+    "dist:win": "npm run build && electron-builder --win portable"
+  },
+  "dependencies": {
+    "@gltf-transform/core": "^4.4.0",
+    "@gltf-transform/extensions": "^4.4.0",
+    "@gltf-transform/functions": "^4.4.0",
+    "archiver": "^8.0.0",
+    "draco3dgltf": "^1.5.7",
+    "express": "^5.2.1",
+    "meshoptimizer": "^1.1.1",
+    "multer": "^2.1.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "sharp": "^0.35.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/archiver": "^8.0.0",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^10.0.3",
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.3",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "tsx": "^4.22.4",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.12"
+  },
+  "build": {
+    "appId": "com.chaolen.glb-lossless-optimizer",
+    "productName": "GLB 压缩优化器",
+    "directories": {
+      "output": "release"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/sharp/**/*",
+      "node_modules/@img/sharp-win32-x64/**/*",
+      "node_modules/**/sharp/**/*",
+      "node_modules/**/@img/sharp-win32-x64/**/*"
+    ],
+    "files": [
+      "dist/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "!node_modules/@img/sharp-wasm32{,/**}",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "artifactName": "GLB-Lossless-Optimizer-${version}.${ext}"
+    }
+  }
+}

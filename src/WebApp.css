@@ -1,0 +1,29 @@
+.web-output-note,
+.web-download-placeholder {
+  padding: 10px 12px;
+  border: 1px dashed rgba(207, 122, 40, 0.26);
+  border-radius: 8px;
+  background: rgba(255, 249, 243, 0.72);
+  color: var(--muted-strong);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.web-download-placeholder {
+  border-style: solid;
+  border-color: var(--line);
+  background: #fff;
+  color: var(--muted);
+}
+
+.web-download-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.web-download-action .action-icon {
+  width: 17px;
+  height: 17px;
+}
