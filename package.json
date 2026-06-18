@@ -10,6 +10,7 @@
     "dev:client": "vite",
     "dev:server": "tsx watch server/index.ts",
     "build": "tsc -b && tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.runtime.json && vite build",
+    "deploy:web": "node scripts/deploy-web.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "tsx server/index.ts",
